@@ -1052,6 +1052,10 @@ Nonparametric
 - ``fast_linbin``, used by ``KDEUnivariate.fit(fft=True)``, wrote outside of
   its array for some inputs and dropped observations at the upper end of the
   grid. :issue:`9556`, :pr:`10232`
+- ``kdensityfft`` accepts data that is not native-endian ``float64``, such as
+  big-endian arrays read from FITS or HDF5 files, ``float32`` and integer
+  arrays. Before, it raised a ``ValueError`` from the binning routine, while
+  ``KDEUnivariate.fit(fft=True)`` accepted the same data. :issue:`10770`
 
 Duration models
 ---------------

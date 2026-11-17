@@ -661,7 +661,8 @@ def kdensityfft(
         Series C. 31.2, 93-9.
     """
     result_object = bool_like(result_object, "result_object", optional=True)
-    x = np.asarray(x)
+    # fast_linbin only accepts native-endian float64
+    x = array_like(x, "x")
     # will not work for two columns.
     x = x[np.logical_and(x > clip[0], x < clip[1])]
 

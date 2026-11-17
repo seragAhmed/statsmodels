@@ -449,6 +449,25 @@ def test_kde_fft_cut_zero():
     npt.assert_allclose(integral, 1.0, atol=0.01)
 
 
+@pytest.mark.parametrize(
+    "dtype",
+    [np.dtype(np.float64).newbyteorder("S"), np.float32, np.int64],
+    ids=["byteswapped-float64", "float32", "int64"],
+)
+def test_kdensityfft_converts_input(dtype):
+    # GH 10770: kdensityfft passed x to fast_linbin without converting it, so
+    # data that was not native-endian float64 raised a ValueError from the
+    # Cython buffer check. The estimate must equal the one of the same values
+    # passed as native float64.
+    rng = np.random.default_rng(10770)
+    x = rng.normal(scale=10.0, size=200).astype(dtype)
+    expected = kdensityfft(x.astype(np.float64), result_object=True)
+    res = kdensityfft(x, result_object=True)
+    npt.assert_allclose(res.density, expected.density, rtol=1e-13)
+    npt.assert_allclose(res.grid, expected.grid, rtol=1e-13)
+    npt.assert_allclose(res.bw, expected.bw, rtol=1e-13)
+
+
 def test_fit_self():
     rs = np.random.RandomState(38923801)
     x = rs.standard_normal(100)
